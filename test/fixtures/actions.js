@@ -38,8 +38,9 @@ exports.get = function (key, fn) {
 }
 
 exports.query = function (query, fn) {
-    setTimeout(function() {
-    console.log('query %k', query)
+  console.log('querying %s', query)
+  setTimeout(function() {
+    console.log('queried %s', query)
     fn()
   }, 2000)
 }
@@ -49,4 +50,36 @@ exports.del = function(key, fn) {
     console.log('deleted %s', key)
     fn()
   }, 2000)
+}
+
+exports.window = {
+  location: function (fn) {
+    console.log('getting the location')
+    setTimeout(function() {
+      console.log('got the location')
+      fn()
+    }, 2000)
+  },
+
+  localStorage: {
+    setItem: function * (key, value) {
+      console.log('setting %s to %s', key, value)
+      yield wait(2000)
+      throw new Error('wtf!!!')
+      console.log('set %s to %s', key, value)
+    },
+    removeItem: function (key, fn) {
+      console.log('removing %s', key)
+      setTimeout(function() {
+        console.log('removed %s', key)
+        fn()
+      }, 1000)
+    }
+  }
+}
+
+function wait (ms) {
+  return function (fn) {
+    setTimeout(fn, ms)
+  }
 }

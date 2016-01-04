@@ -4,58 +4,69 @@
 
 var sliced = require('sliced')
 var wrap = require('wrapped')
-var Vo = require('vo')
 
 /**
- * Export `create`
+ * Export `Internal`
  */
 
-module.exports = create
+module.exports = Internal
 
 /**
  * Create
  */
 
-function create (actions) {
-  function API (state) {
-    if (!(this instanceof API)) return new API(state)
-    this.state = state
+function Internal (actions) {
+  function internal (state) {
+    if (!(this instanceof internal)) return new internal(state)
+    this.state = state || {}
     this.queue = []
   }
 
   Object.keys(actions).forEach(function (name) {
     var action = actions[name]
-    API.prototype[name] = function () {
-      var args = sliced(arguments)
-      var state = this.state
-      this.queue.push(function (fn) {
-        wrap(action).apply(state, args.concat(fn))
+
+    if (typeof action === 'function') {
+      internal.prototype[name] = function () {
+        var args = sliced(arguments)
+        var state = this.state
+        this.queue.push(function (fn) {
+          wrap(action).apply(state, args.concat(fn))
+        })
+        return this
+      }
+    } else {
+      var Child = Internal(action)
+      // lazily initialize the namespace, we need the
+      // state and queue of the parent namespace
+      internal.prototype.__defineGetter__(name, function () {
+        var child = Child(this.state)
+        child.queue = this.queue
+        return child
       })
-      return this
     }
   })
 
-  API.prototype.promise = function () {
-    // execute queue sequentially
-    var vo = Vo.apply(vo, this.queue)
-    var self = this
-
+  internal.prototype.promise = function () {
+    var queue = this.queue
     return new Promise(function (success, failure) {
-      vo(function (err, value) {
+      // execute the queue serially
+      function next(err, value) {
         if (err) return failure(err)
-        self.queue = []
-        success(value)
-      })
+        var fn = queue.shift()
+        if (!fn) return success(value)
+        fn(next)
+      }
+      next()
     })
   }
 
-  API.prototype.then = function (fn) {
+  internal.prototype.then = function (fn) {
     return this.promise().then(fn)
   }
 
-  API.prototype.catch = function (fn) {
+  internal.prototype.catch = function (fn) {
     return this.promise().catch(fn)
   }
 
-  return API
+  return internal
 }

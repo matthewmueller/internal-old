@@ -1,0 +1,27 @@
+{
+  "name": "internal",
+  "version": "1.0.0",
+  "description": "internal queue for your public libraries and APIs",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "sliced": "^0.0.5",
+    "wrapped": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "make test"
+  },
+  "keywords": [
+    "internal",
+    "promises",
+    "queue",
+    "async",
+    "sync",
+    "generators"
+  ],
+  "author": "Matthew Mueller",
+  "license": "MIT"
+}
