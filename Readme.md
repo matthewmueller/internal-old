@@ -20,6 +20,7 @@ Some examples of APIs you can build using **internal**:
 **building a simple redis client:**
 
 ```js
+var Internal = require('internal')
 var client = require('redis')
 
 // Wrap methods in Internal
@@ -31,7 +32,7 @@ var internal = Internal({
     this.client.get(key, fn)
   },
   set: function (key, value, fn) {
-    this.client.get(key, fn)
+    this.client.set(key, value, fn)
   }
 })
 
