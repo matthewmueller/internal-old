@@ -53,19 +53,20 @@ exports.del = function(key, fn) {
 }
 
 exports.window = {
-  location: function (fn) {
-    console.log('getting the location')
-    setTimeout(function() {
-      console.log('got the location')
-      fn()
-    }, 2000)
+  location: {
+    get href () {
+      return 'some-url'
+    },
+
+    set href (value) {
+      console.log('setting href to %s', value)
+    }
   },
 
   localStorage: {
     setItem: function * (key, value) {
       console.log('setting %s to %s', key, value)
       yield wait(2000)
-      throw new Error('wtf!!!')
       console.log('set %s to %s', key, value)
     },
     removeItem: function (key, fn) {

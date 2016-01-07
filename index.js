@@ -23,6 +23,31 @@ function Internal (actions) {
   }
 
   Object.keys(actions).forEach(function (name) {
+    var meta = Object.getOwnPropertyDescriptor(actions, name)
+
+    if (meta.get) {
+      internal.prototype.__defineGetter__(name, function () {
+        var args = sliced(arguments)
+        var state = this.state
+        this.queue.push(function (fn) {
+          wrap(meta.get).apply(state, args.concat(fn))
+        })
+        return this
+      })
+    }
+    if (meta.set) {
+      internal.prototype.__defineSetter__(name, function () {
+        var args = sliced(arguments)
+        var state = this.state
+        this.queue.push(function (fn) {
+          wrap(meta.set).apply(state, args.concat(fn))
+        })
+        return this
+      })
+    }
+
+    if (meta.set || meta.get) return
+
     var action = actions[name]
 
     if (typeof action === 'function') {

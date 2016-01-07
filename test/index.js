@@ -9,25 +9,31 @@ actions1
   .create('hi')
 
 actions1.window
-  .location()
   .localStorage
     .setItem('hi', 'value')
     .removeItem('ok')
 
-actions1.query('hi')
-
-
-actions2
-  .connect('test2')
-  .create('hi2')
-
-Promise.all([
-  actions1.promise(),
-  actions2.promise()
-])
-.then(function() {
-  console.log('done!')
+actions1.window.location.href = 'test'
+actions1.window.location.href
+.then(res => {
+  console.log(res)
 })
-.catch(function(e) {
-  console.log('e', e.stack)
-})
+
+// actions1.then(res => actions2.connect(res).promise())
+// actions1.query('hi')
+
+
+// actions2
+//   .connect('test2')
+//   .create('hi2')
+
+// Promise.all([
+//   actions1.promise(),
+//   actions2.promise()
+// ])
+// .then(function() {
+//   console.log('done!')
+// })
+// .catch(function(e) {
+//   console.log('e', e.stack)
+// })
