@@ -2,6 +2,7 @@
  * Module Dependencies
  */
 
+var debug = require('debug')('internal')
 var sliced = require('sliced')
 var wrap = require('wrapped')
 
@@ -31,7 +32,11 @@ function Internal (actions) {
         var args = sliced(arguments)
         var state = this.state
         this.queue.push(function (fn) {
-          wrap(meta.get).apply(state, args.concat(fn))
+          debug('executing: %s', pretty(name, args))
+          wrap(meta.get).apply(state, args.concat(function (err, value) {
+            debug(' executed: %s', pretty(name, args)(err || value))
+            return fn.apply(null, arguments)
+          }))
         })
         return this
       })
@@ -41,7 +46,11 @@ function Internal (actions) {
         var args = sliced(arguments)
         var state = this.state
         this.queue.push(function (fn) {
-          wrap(meta.set).apply(state, args.concat(fn))
+          debug('executing: %s', pretty(name, args))
+          wrap(meta.set).apply(state, args.concat(function (err, value) {
+            debug(' executed: %s', pretty(name, args)(err || value))
+            return fn.apply(null, arguments)
+          }))
         })
         return this
       })
@@ -56,7 +65,11 @@ function Internal (actions) {
         var args = sliced(arguments)
         var state = this.state
         this.queue.push(function (fn) {
-          wrap(action).apply(state, args.concat(fn))
+          debug('executing: %s', pretty(name, args))
+          wrap(action).apply(state, args.concat(function (err, value) {
+            debug(' executed: %s', pretty(name, args)(err || value))
+            return fn.apply(null, arguments)
+          }))
         })
         return this
       }
@@ -107,4 +120,26 @@ function Internal (actions) {
   }
 
   return internal
+}
+
+/**
+ * Prettify a function
+ *
+ * @param {String} name
+ * @param {Array} args
+ * @return {Function}
+ */
+
+function pretty (name, args) {
+  args = args.map(arg => JSON.stringify(arg)).join(', ')
+
+  function response (ret) {
+    return name + '(' + args + ') => ' + JSON.stringify(ret)
+  }
+
+  response.toString = function () {
+    return name + '(' + args + ')'
+  }
+
+  return response
 }

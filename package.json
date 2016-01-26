@@ -7,6 +7,7 @@
     "test": "test"
   },
   "dependencies": {
+    "debug": "^2.2.0",
     "sliced": "^0.0.5",
     "wrapped": "^1.0.0"
   },
