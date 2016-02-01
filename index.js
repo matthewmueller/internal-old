@@ -20,7 +20,6 @@ function Internal (actions) {
   function internal (state) {
     if (!(this instanceof internal)) return new internal(state)
     this.state = state || {}
-    this.running = false
     this.queue = []
   }
 
@@ -86,12 +85,10 @@ function Internal (actions) {
   })
 
   internal.prototype.promise = function () {
-    if (this.running) return this.running
+    var queue = [].concat(this.queue)
+    this.queue = []
 
-    var queue = this.queue
-    var self = this
-
-    var p = new Promise(function (success, failure) {
+    return new Promise(function (success, failure) {
       // execute the queue serially
       function next(err, value) {
         if (err) return done(err)
@@ -101,14 +98,11 @@ function Internal (actions) {
       }
 
       function done(err, value) {
-        self.running = false
-        return err ? failure(value) : success(value)
+        return err ? failure(err) : success(value)
       }
 
       next()
     })
-
-    return this.running = p
   }
 
   internal.prototype.then = function (fn) {
