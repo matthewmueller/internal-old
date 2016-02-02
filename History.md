@@ -1,4 +1,9 @@
 
+1.0.5 / 2016-02-02
+==================
+
+  * shared context across internal action calls
+
 1.0.4 / 2016-02-02
 ==================
 
