@@ -20,7 +20,7 @@ module.exports = Internal
 function Internal (actions) {
   function internal (state) {
     if (!(this instanceof internal)) return new internal(state)
-    this.state = assign(actions || {}, state || {})
+    this.state = bind(actions, state || {})
     this.queue = []
   }
 
@@ -78,7 +78,8 @@ function Internal (actions) {
       // lazily initialize the namespace, we need the
       // state and queue of the parent namespace
       internal.prototype.__defineGetter__(name, function () {
-        var child = Child(this.state)
+        var child = Child()
+        child.state = this.state
         child.queue = this.queue
         return child
       })
@@ -115,6 +116,26 @@ function Internal (actions) {
   }
 
   return internal
+}
+
+function bind (actions, state) {
+  var obj =  walk(actions, function(fn) {
+    return fn.bind(state)
+  })
+
+  Object.keys(obj).forEach(function(key) {
+    state[key] = state[key] || obj[key]
+  })
+
+  return state
+}
+
+function walk (obj, fn) {
+  Object.keys(obj).forEach(function (key) {
+    if (typeof obj[key] === 'function') obj[key] = fn(obj[key])
+    else walk(obj[key], fn)
+  })
+  return obj
 }
 
 /**
