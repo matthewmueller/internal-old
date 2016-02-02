@@ -1,6 +1,6 @@
 {
   "name": "internal",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "internal queue for your public libraries and APIs",
   "main": "index.js",
   "directories": {
