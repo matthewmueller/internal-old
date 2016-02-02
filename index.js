@@ -3,6 +3,7 @@
  */
 
 var debug = require('debug')('internal')
+var assign = require('object-assign')
 var sliced = require('sliced')
 var wrap = require('wrapped')
 
@@ -19,7 +20,7 @@ module.exports = Internal
 function Internal (actions) {
   function internal (state) {
     if (!(this instanceof internal)) return new internal(state)
-    this.state = state || {}
+    this.state = assign(actions || {}, state || {})
     this.queue = []
   }
 
