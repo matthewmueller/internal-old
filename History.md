@@ -1,4 +1,9 @@
 
+1.0.6 / 2016-02-04
+==================
+
+  * fixed running actions concurrently. started writing tests
+
 1.0.5 / 2016-02-02
 ==================
 
