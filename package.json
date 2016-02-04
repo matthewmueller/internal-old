@@ -12,7 +12,9 @@
     "sliced": "^0.0.5",
     "wrapped": "^1.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "^2.4.5"
+  },
   "scripts": {
     "test": "make test"
   },

@@ -21,6 +21,7 @@ function Internal (actions) {
   function internal (state) {
     if (!(this instanceof internal)) return new internal(state)
     this.state = bind(actions, state || {})
+    this.context = this
     this.queue = []
   }
 
@@ -71,7 +72,7 @@ function Internal (actions) {
             return fn.apply(null, arguments)
           }))
         })
-        return this
+        return this.context || this
       }
     } else {
       var Child = Internal(action)
@@ -81,6 +82,8 @@ function Internal (actions) {
         var child = Child()
         child.state = this.state
         child.queue = this.queue
+        // save the root context
+        child.context = this.context || this
         return child
       })
     }
@@ -89,22 +92,31 @@ function Internal (actions) {
   internal.prototype.promise = function () {
     var queue = [].concat(this.queue)
     this.queue = []
+    var self = this
 
-    return new Promise(function (success, failure) {
-      // execute the queue serially
-      function next(err, value) {
-        if (err) return done(err)
-        var fn = queue.shift()
-        if (!fn) return done(null, value)
-        fn(next)
-      }
+    function promise () {
+      return new Promise(function (success, failure) {
+        // execute the queue serially
+        function next(err, value) {
+          if (err) return done(err)
+          var fn = queue.shift()
+          if (!fn) return done(null, value)
+          fn(next)
+        }
 
-      function done(err, value) {
-        return err ? failure(err) : success(value)
-      }
+        function done(err, value) {
+          self.running = false
+          return err ? failure(err) : success(value)
+        }
 
-      next()
-    })
+        next()
+      })
+    }
+
+    // either attach to the previous or start a new one
+    return this.running
+      ? this.running.then(function () { return promise() })
+      : this.running = promise()
   }
 
   internal.prototype.then = function (fn) {
