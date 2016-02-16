@@ -1,6 +1,6 @@
 {
   "name": "internal",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "internal queue for your public libraries and APIs",
   "main": "index.js",
   "directories": {
@@ -10,7 +10,7 @@
     "debug": "^2.2.0",
     "object-assign": "^4.0.1",
     "sliced": "^0.0.5",
-    "wrapped": "^1.0.0"
+    "wrapped": "^1.0.1"
   },
   "devDependencies": {
     "mocha": "^2.4.5"
