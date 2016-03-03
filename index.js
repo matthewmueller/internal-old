@@ -119,12 +119,12 @@ function Internal (actions) {
       : this.running = promise()
   }
 
-  internal.prototype.then = function (fn) {
-    return this.promise().then(fn)
+  internal.prototype.then = function (success, failure) {
+    return this.promise().then(success, failure)
   }
 
-  internal.prototype.catch = function (fn) {
-    return this.promise().catch(fn)
+  internal.prototype.catch = function (failure) {
+    return this.promise().catch(failure)
   }
 
   return internal
